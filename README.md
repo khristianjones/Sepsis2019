@@ -24,6 +24,10 @@ See the PhysioNet/CinC 2019 webpage for more details, including instructions for
 =======
 See the PhysioNet/CinC 2019 webpage for more details, including instructions for the other files in this repository.
 
+<<<<<<< HEAD
 Last Edited 7-24-2019 
 by Khristian, Erik, and Abby 
 >>>>>>> added more to readme
+=======
+Last Edited 7-24-2019
+>>>>>>> parent of 6f56e2c... added more to readme

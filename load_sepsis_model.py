@@ -109,15 +109,14 @@ current_file_name = "p120000.psv".format(file_name)
 file_to_open = os.path.join("Training2/trainingB/training_setB", current_file_name)
 
 ICU_values, column_names = read_challenge_data(file_to_open)
-test_patient = hour_by_hour(ICU_values)
-    
+test_patient, test_label = hour_by_hour(ICU_values)
+
+pca_test = pca.transform(test_patient)  
 ##################Start of Tenserflow #########################################
-xx=pca_stacked_train
-xx = tf.cast(xx,tf.float32)
-yy=test_patient
-yy = tf.cast(yy,tf.float32)
-x_train=keras.utils.to_categorical(xx, 2)   #for training
-y_test=keras.utils.to_categorical(yy, 2)    #for testing
+xx = stacked_labels
+#xx = tf.cast(xx,tf.float32)
+x_train = keras.utils.to_categorical(xx, 2)   #for training
+
  
  
 print(tf.VERSION)
@@ -128,9 +127,9 @@ print(tf.keras.__version__)
  
 #Building Tensorflow Neural Network 
 model = keras.Sequential()
-model.add(Dense(6, input_shape=(10,), activation='sigmoid'))
+model.add(Dense(6, input_shape=(11,), activation='sigmoid'))
 model.add(Dense(4,activation='sigmoid'))
-model.add(Dense(2,activation='sigmoid'))
+model.add(Dense(1,activation='sigmoid'))
 
 
 model.compile(optimizer=RMSprop(), 
@@ -139,11 +138,11 @@ model.compile(optimizer=RMSprop(),
  
  
  
-model.fit(stacked_train[:,:], x_train, batch_size=32, epochs=15, shuffle=True, validation_split=0.1)
+model.fit(pca_stacked_train[:,:], x_train, batch_size=32, epochs=15, shuffle=True, validation_split=0.1)
  
 model.summary()    
     
-output=model.predict(test_patient[:,:])    
+output=model.predict(pca_test[:,:])    
     
     
     

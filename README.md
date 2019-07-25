@@ -19,6 +19,7 @@ where `input_directory` is a directory for input data files and `output_director
 
 ## Details
 
+<<<<<<< HEAD
 <<<<<<< 48dae74f86d1a9bfe49d4804e8e4f34768576b2a
 See the PhysioNet/CinC 2019 webpage for more details, including instructions for the other files in this repository.
 =======
@@ -31,3 +32,9 @@ by Khristian, Erik, and Abby
 =======
 Last Edited 7-24-2019
 >>>>>>> parent of 6f56e2c... added more to readme
+=======
+See the PhysioNet/CinC 2019 webpage for more details, including instructions for the other files in this repository.
+
+Last Edited 7-24-2019 
+by Khristian, Erik, and Abby 
+>>>>>>> master

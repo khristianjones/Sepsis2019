@@ -21,4 +21,5 @@ where `input_directory` is a directory for input data files and `output_director
 
 See the PhysioNet/CinC 2019 webpage for more details, including instructions for the other files in this repository.
 
-Last Edited 7-24-2019
+Last Edited 7-24-2019 
+by Khristian, Erik, and Abby 

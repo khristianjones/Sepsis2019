@@ -36,7 +36,7 @@ def sort_train(train_list):         #also normalizes and fills NaN w/ zero
 
 #Reads in and makes a list with the Train and Test .txt file    
 def get_train_test():
-    with open("trainA.txt", 'r') as file:
+    with open("train_setA.txt", 'r') as file:
     
         for line in file:
             train_string = line
@@ -45,7 +45,7 @@ def get_train_test():
     
     file.close()
     
-    with open("testA.txt", 'r') as file:
+    with open("test_setA.txt", 'r') as file:
     
         for line in file:
             test_string = line
@@ -54,7 +54,7 @@ def get_train_test():
     
     file.close()
     
-    with open("trainB.txt", 'r') as file:
+    with open("train_setB.txt", 'r') as file:
     
         for line in file:
             train_string = line
@@ -63,7 +63,7 @@ def get_train_test():
     
     file.close()
     
-    with open("testB.txt", 'r') as file:
+    with open("test_setB.txt", 'r') as file:
     
         for line in file:
             test_string = line

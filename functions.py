@@ -37,40 +37,43 @@ def sort_train(train_list):         #also normalizes and fills NaN w/ zero
 #Reads in and makes a list with the Train and Test .txt file    
 def get_train_test():
     with open("train_setA.txt", 'r') as file:
-    
         for line in file:
             train_string = line
             train_listA = train_string.split('\t')
-        train_listA = list(map(int, train_listA))
-    
     file.close()
+    train_listA = train_listA[:-1]
+    
+    train_listA =[int(i) for i in train_listA]
     
     with open("test_setA.txt", 'r') as file:
     
         for line in file:
             test_string = line
             test_listA = test_string.split('\t')
-        test_listA = list(map(int, test_listA))
-    
     file.close()
     
-    with open("train_setB.txt", 'r') as file:
+    test_listA = test_listA[:-1]
+    test_listA = [int(i) for i in test_listA]
     
+    with open("train_setB.txt", 'r') as file:
         for line in file:
             train_string = line
             train_listB = train_string.split('\t')
-        train_listB = list(map(int, train_listB))
-    
     file.close()
+    
+    train_listB = train_listB[:-1]
+    train_listB = [int(i) for i in train_listB]
     
     with open("test_setB.txt", 'r') as file:
     
         for line in file:
             test_string = line
-            test_listB = test_string.split('\t')
-        test_listB = list(map(int, test_listB))
-    
+            test_listB = test_string.split('\t')  
     file.close()
+    
+    test_listB = test_listB[:-1]
+    test_listB = [int(i) for i in test_listB]
+    
     return(train_listA, test_listA, train_listB, test_listB)
     
 #reads in a chalenge file and ignores the sepsis label

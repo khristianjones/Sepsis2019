@@ -18,10 +18,12 @@ import os.path
 import math
 import time
 import warnings
+
+import functions
 warnings.filterwarnings('ignore') #Removes warnings from preprocessing scale
 
 #####Global Variables##########
-PATH = '/home/khristian/Desktop/Summer Research 2019/Training2/trainingA/training/p000001.psv'
+#PATH = '/home/khristian/Desktop/Summer Research 201/Training2/trainingA/training/p000001.psv'
 patient_list= [1, 2]
 #####Main Program##############
 def read_challenge_data(input_file):
@@ -69,7 +71,7 @@ def hour_by_hour(patient):
 
 
 
-train_listA, test_listA, train_listB, test_listB = get_train_test()
+train_listA, test_listA, train_listB, test_listB = functions.get_train_test()
 patient_number = 1  #counter for printing what patient is being worked
 
 #Creates the Stacked Training list
@@ -82,7 +84,7 @@ for file_name in test_listB:
         print("\r working patient: "+ str(patient_number), end= '')
         
         current_file_name = "p{0:06d}.psv".format(file_name)
-        file_to_open = os.path.join("Training2/trainingA/training", current_file_name)
+        file_to_open = os.path.join("/home/khristian/Documents/Training/Training2/trainingB/training_setB/", current_file_name)
         
         ICU_values, column_names = read_challenge_data(file_to_open)
         current_patient, sepsis_labels = hour_by_hour(ICU_values)
@@ -146,7 +148,7 @@ output=model.predict(pca_test[:,:])
     
     
     
-    
+
     
     
     

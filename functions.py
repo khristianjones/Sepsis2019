@@ -39,9 +39,9 @@ def get_train_test():
     with open("train_setA.txt", 'r') as file:
         for line in file:
             train_string = line
-            train_listA = train_string.split('\t')
+            train_listA = train_string.split()
     file.close()
-    train_listA = train_listA[:-1]
+    
     
     train_listA =[int(i) for i in train_listA]
     
@@ -49,29 +49,28 @@ def get_train_test():
     
         for line in file:
             test_string = line
-            test_listA = test_string.split('\t')
+            test_listA = test_string.split()
     file.close()
     
-    test_listA = test_listA[:-1]
     test_listA = [int(i) for i in test_listA]
     
     with open("train_setB.txt", 'r') as file:
         for line in file:
             train_string = line
-            train_listB = train_string.split('\t')
+            train_listB = train_string.split()
     file.close()
     
-    train_listB = train_listB[:-1]
+
     train_listB = [int(i) for i in train_listB]
     
     with open("test_setB.txt", 'r') as file:
     
         for line in file:
             test_string = line
-            test_listB = test_string.split('\t')  
+            test_listB = test_string.split()  
     file.close()
     
-    test_listB = test_listB[:-1]
+
     test_listB = [int(i) for i in test_listB]
     
     return(train_listA, test_listA, train_listB, test_listB)

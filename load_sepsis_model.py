@@ -107,8 +107,8 @@ print("\t\tstacking took " + str(total) + " seconds\n")
 
 
 #Dummy Test Set
-current_file_name = "p120000.psv".format(file_name)
-file_to_open = os.path.join("Training2/trainingB/training_setB", current_file_name)
+current_file_name = "p019722.psv".format(file_name)
+file_to_open = os.path.join("/home/khristian/Documents/Training/Training2/trainingA/training", current_file_name)
 
 ICU_values, column_names = read_challenge_data(file_to_open)
 test_patient, test_label = hour_by_hour(ICU_values)
@@ -129,9 +129,9 @@ print(tf.keras.__version__)
  
 #Building Tensorflow Neural Network 
 model = keras.Sequential()
-model.add(Dense(6, input_shape=(11,), activation='sigmoid'))
+model.add(Dense(6, input_shape=(10,), activation='sigmoid'))
 model.add(Dense(4,activation='sigmoid'))
-model.add(Dense(1,activation='sigmoid'))
+model.add(Dense(2,activation='sigmoid'))
 
 
 model.compile(optimizer=RMSprop(), 
@@ -140,7 +140,7 @@ model.compile(optimizer=RMSprop(),
  
  
  
-model.fit(pca_stacked_train[:,:], x_train, batch_size=32, epochs=15, shuffle=True, validation_split=0.1)
+model.fit(pca_stacked_train[:,:-1], xx, batch_size=32, epochs=15, shuffle=True, validation_split=0.1)
  
 model.summary()    
     

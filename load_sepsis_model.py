@@ -67,7 +67,16 @@ def hour_by_hour(patient):
     current_matrix = np.delete(current_matrix, 40, 1)
     current_matrix = scale(current_matrix, axis=0, with_mean=True, with_std=True, copy=True)
     current_matrix[:, -1:] = sepsis_labels
-    return(current_matrix, sepsis_labels)
+    
+    one_hot_labels = np.zeros((len(sepsis_labels),2))
+    i=0
+    for i in range(len(sepsis_labels)):
+        if sepsis_labels[i] == 0:
+            one_hot_labels[i, :] = [1, 0] 
+        else:
+            one_hot_labels[i, :] = [0, 1]
+
+    return(current_matrix, sepsis_labels, one_hot_labels)
 
 
 
@@ -78,20 +87,26 @@ patient_number = 1  #counter for printing what patient is being worked
 start = time.time()
 stacked_train = np.zeros(40)
 stacked_labels = np.zeros(1)
-for file_name in test_listB:
+stacked_one_hot = np.zeros(2)
+for file_name in train_listB:
         
         
         print("\r working patient: "+ str(patient_number), end= '')
         
         current_file_name = "p{0:06d}.psv".format(file_name)
-        file_to_open = os.path.join("/home/khristian/Documents/Training/Training2/trainingB/training_setB/", current_file_name)
+        file_to_open = os.path.join("/home/khristian/Documents/Training/Training2/trainingB/training_setB/", current_file_name) #remove /home/khristian/Documents/ before submitting, and add the training files to the folder"
         
         ICU_values, column_names = read_challenge_data(file_to_open)
-        current_patient, sepsis_labels = hour_by_hour(ICU_values)
+        current_patient, sepsis_labels, one_hot_labels = hour_by_hour(ICU_values)
         stacked_train = np.vstack((stacked_train, current_patient))
         stacked_labels = np.vstack((stacked_labels, sepsis_labels))
+        stacked_one_hot = np.vstack((stacked_one_hot, one_hot_labels))
         patient_number += 1
 
+stacked_train = np.delete(stacked_train, 0, 0)
+pca_stacked_train = np.delete(stacked_train, 0, 0)
+stacked_labels = np.delete(stacked_labels, 0, 0)
+stacked_one_hot = np.delete(stacked_one_hot, 0, 0)
 #PCA Transforms the Stacked Training List
 pca = PCA(n_components=10)
 pca.fit(stacked_train)
@@ -99,11 +114,12 @@ pca.fit(stacked_train)
 pca_stacked_train = pca.transform(stacked_train) 
 
 #Adds the labels back on
-pca_stacked_train = np.hstack((pca_stacked_train, stacked_labels))    
+pca_stacked_train = np.hstack((pca_stacked_train, stacked_one_hot))    
 end = time.time()
 total = end-  start
 print("\t\tstacking took " + str(total) + " seconds\n")    
  
+#Deletes initialized row
 
 
 #Dummy Test Set
@@ -111,11 +127,11 @@ current_file_name = "p019722.psv".format(file_name)
 file_to_open = os.path.join("/home/khristian/Documents/Training/Training2/trainingA/training", current_file_name)
 
 ICU_values, column_names = read_challenge_data(file_to_open)
-test_patient, test_label = hour_by_hour(ICU_values)
+test_patient, test_label, test_one_hot = hour_by_hour(ICU_values)
 
 pca_test = pca.transform(test_patient)  
 ##################Start of Tenserflow #########################################
-xx = stacked_labels
+xx = stacked_one_hot
 #xx = tf.cast(xx,tf.float32)
 x_train = keras.utils.to_categorical(xx, 2)   #for training
 
@@ -135,12 +151,12 @@ model.add(Dense(2,activation='sigmoid'))
 
 
 model.compile(optimizer=RMSprop(), 
-             loss='sparse_categorical_crossentropy',
+             loss='categorical_crossentropy',
              metrics=['accuracy'])
  
  
  
-model.fit(pca_stacked_train[:,:-1], xx, batch_size=32, epochs=15, shuffle=True, validation_split=0.1)
+model.fit(pca_stacked_train[:,:-2], xx, batch_size=32, epochs=5, shuffle=True, validation_split=0.1)
  
 model.summary()    
     

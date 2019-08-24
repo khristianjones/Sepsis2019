@@ -14,20 +14,20 @@ def load_sepsis_model():
     stacked_train = np.vstack((stacked_train, stacked_train3))
     stacked_train = np.vstack((stacked_train, stacked_train4))
     
+    pca = PCA(n_components=10)
+    pca.fit(stacked_train)
+    
     model1 = keras.models.load_model('my_model.h5')
-    model = (model1, stacked_train)
+    model = (model1, pca)
     return(model)
     
 def get_sepsis_score(current_data, model):
 
     model1 = model[0]
-    stacked_train = model[1]
-
-    pca = PCA(n_components=10)
-    pca.fit(stacked_train)
-    
+    pca = model[1]
+   
     test_patient = functions.hour_by_hour(current_data)
-
+    
     #PCA requires a 2D array. This bit ensures that if it is the first hour, then the patient will have 2D
     if test_patient.size == 40:
         test_patient = np.vstack((test_patient, test_patient))
@@ -35,7 +35,7 @@ def get_sepsis_score(current_data, model):
     else:
         pca_test = pca.transform(test_patient)
         
-    output=model1.predict(pca_test[:,:])
+    output=model1.predict(pca_test[-2:-1,:])
     
     if output[-1,1] >= .1:
         current_score = output[-1,1] * 10

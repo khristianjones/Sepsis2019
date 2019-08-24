@@ -1,14 +1,11 @@
 #new version as of June 10 2019
 from sklearn.impute import SimpleImputer
 from sklearn import preprocessing
-<<<<<<< HEAD
 from sklearn.preprocessing import scale
 import numpy as np
 
-=======
 from sklearn.decomposition import PCA
 import numpy as np
->>>>>>> d31bf63da74342bf6b4d9acf2727cef08491b831
 import os.path
 
 
@@ -18,7 +15,6 @@ import os.path
 import warnings
 warnings.filterwarnings('ignore') 
 
-<<<<<<< HEAD
 def hour_by_hour(patient):
     current_matrix = patient[0, :]
     #sepsis_label = patient[0, -1]
@@ -87,9 +83,6 @@ def training_hour_by_hour(patient):
 
     return(current_matrix, sepsis_labels, one_hot_labels)
     
-    
-=======
->>>>>>> d31bf63da74342bf6b4d9acf2727cef08491b831
 def sort_train(train_list):         #also normalizes and fills NaN w/ zero
     
     input_training_data = np.zeros(40)

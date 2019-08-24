@@ -85,7 +85,6 @@ def hour_by_hour(patient):
             one_hot_labels[i, :] = [0, 1]
 
     return(current_matrix, sepsis_labels, one_hot_labels)
->>>>>>> d31bf63da74342bf6b4d9acf2727cef08491b831
 
 
 
@@ -97,7 +96,6 @@ start = time.time()
 stacked_train = np.zeros(40)
 stacked_labels = np.zeros(1)
 stacked_one_hot = np.zeros(2)
-<<<<<<< HEAD
 
 for file_name in train_listA:
         

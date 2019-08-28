@@ -26,22 +26,25 @@ def get_sepsis_score(current_data, model):
     model1 = model[0]
     pca = model[1]
    
-    test_patient = functions.hour_by_hour(current_data)
+    test_patient, QSOFA = functions.hour_by_hour(current_data)
     
     #PCA requires a 2D array. This bit ensures that if it is the first hour, then the patient will have 2D
     if test_patient.size == 40:
         test_patient = np.vstack((test_patient, test_patient))
+        QSOFA = np.vstack((QSOFA, QSOFA))
         pca_test = pca.transform(test_patient)
+        pca_test = np.hstack((pca_test, QSOFA))
     else:
         pca_test = pca.transform(test_patient)
-        
+        pca_test = np.hstack((pca_test, QSOFA))
+    
     output=model1.predict(pca_test[-2:-1,:])
     
     if output[-1,1] >= .1:
-        current_score = output[-1,1] * 10
+        current_score = output[-1,1]
         current_label = 1
     else:
-        current_score = output[-1,1] * 10
+        current_score = output[-1,1]
         current_label = 0
         
     return(current_score, current_label)

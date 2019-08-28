@@ -25,7 +25,11 @@ def hour_by_hour(patient):
         if hour == 0:
              current_matrix = patient[0, :]
              current_matrix = np.nan_to_num(current_matrix)
-             
+             QSOFA = current_matrix[-1:]
+             if current_matrix[3] <=100 and current_matrix[6] >= 22 :
+                    QSOFA = 2
+             else :
+                    QSOFA = 0
              #sepsis_label = patient[0, -1]
         else:    
             current_hour = patient[hour, :]
@@ -38,9 +42,15 @@ def hour_by_hour(patient):
                     current_matrix[hour, feature] = current_matrix[hour-1, feature]
                 else:
                     continue
+            QSOFA = current_matrix[:, -1:]     
+            for hour1 in range(len(QSOFA)):
+                if current_matrix[hour1, 3] <=100 and current_matrix[hour1, 6] >= 22 :
+                    QSOFA[hour1] = 2
+                else :
+                    QSOFA[hour1] = 0  
     current_matrix = scale(current_matrix, axis=0, with_mean=True, with_std=True, copy=True)
 
-    return(current_matrix)
+    return(current_matrix, QSOFA)
     
     
 def training_hour_by_hour(patient):
@@ -69,6 +79,15 @@ def training_hour_by_hour(patient):
                 else:
                     continue
     sepsis_labels = current_matrix[:, -1:]
+    QSOFA = current_matrix[:, -1]
+    
+    for hour in range(len(patient)):
+        if current_matrix[hour, 3] <=100 and current_matrix[hour, 6] >= 22 :
+            QSOFA[hour] = 2
+        else :
+            QSOFA[hour] = 0
+            
+
     current_matrix = np.delete(current_matrix, 40, 1)
     current_matrix = scale(current_matrix, axis=0, with_mean=True, with_std=True, copy=True)
     current_matrix[:, -1:] = sepsis_labels
@@ -81,7 +100,7 @@ def training_hour_by_hour(patient):
         else:
             one_hot_labels[i, :] = [0, 1]
 
-    return(current_matrix, sepsis_labels, one_hot_labels)
+    return(current_matrix, sepsis_labels, one_hot_labels, QSOFA)
     
 def sort_train(train_list):         #also normalizes and fills NaN w/ zero
     

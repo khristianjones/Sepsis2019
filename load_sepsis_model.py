@@ -31,14 +31,13 @@ def read_challenge_data(input_file):
         header = f.readline().strip()
         column_names = np.array(header.split('|'))
         values = np.loadtxt(f, delimiter='|')
-<<<<<<< HEAD
     # ignore SepsisLabel column if present #use if you need to ignore sepsis label
-    if column_names[-1] == 'SepsisLabel':
-        column_names = column_names[:-1]
-        values = values[:, :-1]
+#    if column_names[-1] == 'SepsisLabel':
+#        column_names = column_names[:-1]
+#        values = values[:, :-1]
     return (values, column_names)
 
-=======
+
 # =============================================================================
 #     # ignore SepsisLabel column if present #use if you need to ignore sepsis label
 #     if column_names[-1] == 'SepsisLabel':
@@ -72,6 +71,15 @@ def hour_by_hour(patient):
                 else:
                     continue
     sepsis_labels = current_matrix[:, -1:]
+    
+    QSOFA = current_matrix[:, -1:]
+    
+    for hour in range(len(patient)):
+        if current_matrix[hour, 3] <=100 and current_matrix[hour, 6] >= 22 :
+            QSOFA[hour] = 2
+        else :
+            QSOFA[hour] = 0
+            
     current_matrix = np.delete(current_matrix, 40, 1)
     current_matrix = scale(current_matrix, axis=0, with_mean=True, with_std=True, copy=True)
     current_matrix[:, -1:] = sepsis_labels
@@ -84,7 +92,7 @@ def hour_by_hour(patient):
         else:
             one_hot_labels[i, :] = [0, 1]
 
-    return(current_matrix, sepsis_labels, one_hot_labels)
+    return(current_matrix, sepsis_labels, one_hot_labels, QSOFA)
 
 
 
@@ -94,6 +102,7 @@ patient_number = 1  #counter for printing what patient is being worked
 #Creates the Stacked Training list
 start = time.time()
 stacked_train = np.zeros(40)
+stacked_SOFA = np.zeros(1)
 stacked_labels = np.zeros(1)
 stacked_one_hot = np.zeros(2)
 
@@ -106,7 +115,8 @@ for file_name in train_listA:
         file_to_open = os.path.join("Training/Training2/trainingA/training/", current_file_name) #remove /home/khristian/Documents/ before submitting, and add the training files to the folder"
         
         ICU_values, column_names = read_challenge_data(file_to_open)
-        current_patient, sepsis_labels, one_hot_labels = functions.hour_by_hour(ICU_values)
+        current_patient, sepsis_labels, one_hot_labels, QSOFA = hour_by_hour(ICU_values)
+        stacked_SOFA = np.vstack((stacked_SOFA, QSOFA))
         stacked_train = np.vstack((stacked_train, current_patient))
         stacked_labels = np.vstack((stacked_labels, sepsis_labels))
         stacked_one_hot = np.vstack((stacked_one_hot, one_hot_labels))
@@ -114,17 +124,19 @@ for file_name in train_listA:
 
 patient_number = 1
 print("\n")        
-for file_name2 in train_listB:
-        
-        
-        print("\r working patient (GroupB): "+ str(patient_number), end= '')
-        
-        current_file_name = "p{0:06d}.psv".format(file_name2)
-        file_to_open = os.path.join("Training/Training2/trainingB/training_setB/", current_file_name) #remove /home/khristian/Documents/ before submitting, and add the training files to the folder"
-        
-        ICU_values, column_names = read_challenge_data(file_to_open)
-        current_patient, sepsis_labels, one_hot_labels = functions.hour_by_hour(ICU_values)
-=======
+# =============================================================================
+# for file_name2 in train_listB:
+#         
+#         
+#         print("\r working patient (GroupB): "+ str(patient_number), end= '')
+#         
+#         current_file_name = "p{0:06d}.psv".format(file_name2)
+#         file_to_open = os.path.join("Training/Training2/trainingB/training_setB/", current_file_name) #remove /home/khristian/Documents/ before submitting, and add the training files to the folder"
+#         
+#         ICU_values, column_names = read_challenge_data(file_to_open)
+#         current_patient, sepsis_labels, one_hot_labels = functions.hour_by_hour(ICU_values)
+# =============================================================================
+
 for file_name in train_listB:
         
         
@@ -134,45 +146,42 @@ for file_name in train_listB:
         file_to_open = os.path.join("/home/khristian/Documents/Training/Training2/trainingB/training_setB/", current_file_name) #remove /home/khristian/Documents/ before submitting, and add the training files to the folder"
         
         ICU_values, column_names = read_challenge_data(file_to_open)
-        current_patient, sepsis_labels, one_hot_labels = hour_by_hour(ICU_values)
->>>>>>> d31bf63da74342bf6b4d9acf2727cef08491b831
+        current_patient, sepsis_labels, one_hot_labels, QSOFA = hour_by_hour(ICU_values)
+        stacked_SOFA = np.vstack((stacked_SOFA, QSOFA))
         stacked_train = np.vstack((stacked_train, current_patient))
         stacked_labels = np.vstack((stacked_labels, sepsis_labels))
         stacked_one_hot = np.vstack((stacked_one_hot, one_hot_labels))
         patient_number += 1
-<<<<<<< HEAD
+
         
 
 #Deletes initialized row
-=======
 
->>>>>>> d31bf63da74342bf6b4d9acf2727cef08491b831
+
 stacked_train = np.delete(stacked_train, 0, 0)
+stacked_SOFA = np.delete(stacked_SOFA, 0, 0)
 pca_stacked_train = np.delete(stacked_train, 0, 0)
 stacked_labels = np.delete(stacked_labels, 0, 0)
 stacked_one_hot = np.delete(stacked_one_hot, 0, 0)
-<<<<<<< HEAD
+
 
 #Saves stacked_train as a .npy file to then pull up in get_sepsis_score to fit the PC's
-np.save("stacked_train.npy", stacked_train)
+#np.save("stacked_train.npy", stacked_train)
 
-=======
->>>>>>> d31bf63da74342bf6b4d9acf2727cef08491b831
+
 #PCA Transforms the Stacked Training List
 pca = PCA(n_components=10)
 pca.fit(stacked_train)
     
 pca_stacked_train = pca.transform(stacked_train) 
 
+pca_stacked_train = np.hstack((pca_stacked_train, stacked_SOFA))    
 #Adds the labels back on
 pca_stacked_train = np.hstack((pca_stacked_train, stacked_one_hot))    
 end = time.time()
 total = end-  start
 print("\t\tstacking took " + str(total) + " seconds\n")    
-<<<<<<< HEAD
 
-
-=======
  
 #Deletes initialized row
 
@@ -182,10 +191,10 @@ current_file_name = "p019722.psv".format(file_name)
 file_to_open = os.path.join("/home/khristian/Documents/Training/Training2/trainingA/training", current_file_name)
 
 ICU_values, column_names = read_challenge_data(file_to_open)
-test_patient, test_label, test_one_hot = hour_by_hour(ICU_values)
+test_patient, test_label, test_one_hot, QSOFA = hour_by_hour(ICU_values)
 
 pca_test = pca.transform(test_patient)  
->>>>>>> d31bf63da74342bf6b4d9acf2727cef08491b831
+pca_test = np.hstack((pca_test, QSOFA))    
 ##################Start of Tenserflow #########################################
 xx = stacked_one_hot
 #xx = tf.cast(xx,tf.float32)
@@ -201,7 +210,7 @@ print(tf.keras.__version__)
  
 #Building Tensorflow Neural Network 
 model = keras.Sequential()
-model.add(Dense(6, input_shape=(10,), activation='sigmoid'))
+model.add(Dense(6, input_shape=(11,), activation='sigmoid'))
 model.add(Dense(4,activation='sigmoid'))
 model.add(Dense(2,activation='sigmoid'))
 
@@ -213,17 +222,17 @@ model.compile(optimizer=RMSprop(),
  
  
 model.fit(pca_stacked_train[:,:-2], xx, batch_size=32, epochs=5, shuffle=True, validation_split=0.1)
-<<<<<<< HEAD
+
 
 model.save('my_model.h5')
  
 model.summary()        
-=======
+
  
 model.summary()    
     
 output=model.predict(pca_test[:,:])    
->>>>>>> d31bf63da74342bf6b4d9acf2727cef08491b831
+
     
     
     

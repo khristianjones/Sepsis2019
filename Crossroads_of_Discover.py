@@ -7,52 +7,9 @@ Created on Tue Oct  8 19:54:43 2019
 
 @author: Erik
 """
-# =============================================================================
-# from tkinter import *
-# import tkinter as tk
-# root = tk.Tk()
-# 
-# Label(root, text = "Childs First name").grid(row = 0, column = 0, height = 5, width = 10, sticky = W)
-# Label(root, text = "Childs Surname").grid(row = 1, column = 0, height = 5, width = 10, sticky = W)
-# Label(root, text = "Childs Year of Birth").grid(row = 2, column = 0, height = 5, width = 10, sticky = W)
-# Label(root, text = "Childs Month of Birth").grid(row = 3, column = 1, height = 5, width = 10, sticky = W)
-# Label(root, text = "Childs Day of Birth").grid(row = 4, column = 1, height = 5, width = 10, sticky = W)
-# 
-# Fname = Entry(root)
-# Sname = Entry(root)
-# x = Entry(root)
-# y = Entry(root)
-# z = Entry(root)
-# 
-# 
-# Fname.grid(row = 0, column = 1)
-# Sname.grid(row = 1, column = 1)
-# x.grid(row = 3, column = 1)
-# y.grid(row = 2, column = 1)
-# z.grid(row = 4, column = 1)
-# 
-# def getInput():
-# 
-#     a = Fname.get()
-#     b = Sname.get()
-#     c = x.get()
-#     d = y.get()
-#     e = z.get()
-#     root.destroy()
-# 
-#     global params
-#     params = [a,b,c,d,e]
-# 
-# 
-# button = Button(root, text = "submit",
-#            command = getInput).grid(row = 5, sticky = W)
-# 
-# root.mainloop()
-# =============================================================================
+
 import tkinter as tk
-
 from tkinter import * 
-
 
 
 fields = 'Age', 'Heart Rate', 'Systolic BP', 'Respiratory Rate', 'Temperature'
@@ -61,48 +18,9 @@ HR = 0
 BP = 0
 RR = 0
 Temp = 0
-# =============================================================================
-# def display(entries):
-#     for entry in entries:
-#         field = entry[0]
-#         text  = entry[1].get()
-#         print('%s: "%s"' % (field, text)) 
-# =============================================================================
-def fetch(entries):
-    global age, HR, BP, RR, Temp
-    age = entries[0][1]
-    HR = entries[1][1] 
-    BP = entries[2][1]
-    RR = entries[3][1]
-    Temp = entries[4][1]
-       
 
-def makeform(root, fields):
-    entries = []
-    for field in fields:
-        row = tk.Frame(root)
-        lab = tk.Label(row, width=15, text=field, anchor='w')
-        ent = tk.Entry(row)
-        row.pack(side=tk.TOP, fill=tk.X, padx=5, pady=5)
-        lab.pack(side=tk.LEFT)
-        ent.pack(side=tk.RIGHT, expand=tk.YES, fill=tk.X)
-        entries.append((field, ent))
-    return entries
-
-def popupmsg():
-    global age, HR, BP, RR, Temp
-    popup = tk.Tk()
-    popup.wm_title("!")
-    msg = diagnose()
-    label = tk.Label(popup, text=msg)
-    label.pack(side="top", fill="x", pady=10)
-    B1 = tk.Button(popup, text="Okay", command = popup.destroy)
-    B1.pack()
-    popup.mainloop()
-    
 def diagnose(age, HR, BP, Temp, RR):
     age = int(age)
-    Output = "ERROR"
     if age <= 10:
 
         """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -224,10 +142,6 @@ def dispdiag():
     B1.pack()
     popup.mainloop()
     
-# =============================================================================
-#     diagnosis = Label(root, anchor=S, text=display,  justify=LEFT)
-#     diagnosis.pack(anchor=CENTER)
-# =============================================================================
 
 if __name__ == '__main__':
     root = tk.Tk()
@@ -243,7 +157,7 @@ if __name__ == '__main__':
     bp = DoubleVar()
     temp = DoubleVar()
     br = DoubleVar()
-    age_scale = tk.Scale(root, length = '150', width='25', background = '#379683', foreground ='#EDF5E1', troughcolor='#8EE4AF', label="Age", variable = age, from_ = 1, to = 50, orient = HORIZONTAL)  
+    age_scale = tk.Scale(root, length = '150', width='25', background = '#379683', foreground ='#EDF5E1', troughcolor='#8EE4AF', label="Age", variable = age, from_ = 1, to = 100, orient = HORIZONTAL)  
     age_scale.pack(anchor=CENTER)  
     
     hr_scale = tk.Scale(root, length = '150', width='25', background = '#379683', foreground ='#EDF5E1', troughcolor='#8EE4AF', label = "Heart Rate",variable = hr, from_ = 0, to = 220, orient = HORIZONTAL)  
@@ -255,7 +169,7 @@ if __name__ == '__main__':
     temp_scale = tk.Scale(root, length = '150', width='25', background = '#379683', foreground ='#EDF5E1', troughcolor='#8EE4AF', label = "Temperature" ,variable = temp, from_ = 95, to = 103, resolution = 0.1, orient = HORIZONTAL)  
     temp_scale.pack(anchor=CENTER)     
   
-    br_scale = tk.Scale(root, length = '150', width='25', background = '#379683', foreground ='#EDF5E1', troughcolor='#8EE4AF', label = "Breathing Rate" ,variable = br, from_ = 18, to = 30, orient = HORIZONTAL)  
+    br_scale = tk.Scale(root, length = '150', width='25', background = '#379683', foreground ='#EDF5E1', troughcolor='#8EE4AF', label = "Breathing Rate" ,variable = br, from_ = 0, to = 50, orient = HORIZONTAL)  
     br_scale.pack(anchor=CENTER) 
     
     btn1 = tk.Button(root, background = '#05386B',text="Value", font="arial", foreground ='#EDF5E1', command=select)  

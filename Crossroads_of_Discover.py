@@ -52,7 +52,7 @@ def diagnose(age, HR, BP, Temp, RR):
             output = "According to the QSOFA score you might have sepsis!"
         
         elif Temp > 100 and Temp < 110:
-            output = "you might have a fever!"
+            output = "You might have a fever!"
         
         elif Temp < 97:
             output = "You better warm up!"
@@ -96,13 +96,13 @@ def diagnose(age, HR, BP, Temp, RR):
         Temp = float(Temp)
     
         if RR == 0 or BP == 0 or HR == 0:
-            output = "Uh oh, you're dead!"
+            output = "He's dead Jim!"
             
         elif RR > 22 and BP < 100:
             output = "According to the QSOFA score you might have sepsis!"
         
         elif Temp > 100 and Temp < 110:
-            output = "you might have a fever!"
+            output = "You might have a fever!"
         
         elif Temp < 97:
             output = "You better warm up!"
@@ -133,7 +133,7 @@ def dispdiag():
     display = diagnose(age.get(),hr.get(),bp.get(),temp.get(),br.get())
     popup = tk.Tk()
     popup.wm_title("!")
-    popup.geometry("300x50")
+    popup.geometry("400x50")
     popup.configure(background='#5CDB95')
     msg = display
     label = tk.Label(popup, background = '#379683', foreground ='#EDF5E1', text=msg)

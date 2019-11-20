@@ -273,18 +273,19 @@ x_train = keras.utils.to_categorical(xx, 2)   #for training
 
 #Creates densly connected layers
 model = keras.Sequential()
-model.add(Dense(6, input_shape=(11,), activation='sigmoid'))
-model.add(Dense(4,activation='sigmoid'))
+model.add(Dense(100, input_shape=(11,), activation='sigmoid'))
+model.add(Dense(200, activation='sigmoid'))
+model.add(Dense(50,activation='sigmoid'))
 model.add(Dense(2,activation='sigmoid'))
 
 
 model.compile(optimizer=RMSprop(), 
-             loss=tf.keras.losses.BinaryCrossentropy(),
+             loss='categorical_crossentropy',
              metrics=['accuracy'])
 
 model.fit(pca_stacked_train[:,:-2], xx, batch_size=500, epochs=20, shuffle=True, validation_split=0.1, callbacks=[plot_losses])
 
-model.save('my_model.h5')   #saves model
+model.save('model_model.h5')   #saves model
  
 model.summary()        
     

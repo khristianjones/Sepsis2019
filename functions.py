@@ -1,6 +1,9 @@
 #new version as of June 10 2019
 from sklearn.impute import SimpleImputer
 from sklearn import preprocessing
+from sklearn.preprocessing import scale
+import numpy as np
+
 from sklearn.decomposition import PCA
 import numpy as np
 import os.path
@@ -12,6 +15,93 @@ import os.path
 import warnings
 warnings.filterwarnings('ignore') 
 
+def hour_by_hour(patient):
+    current_matrix = patient[0, :]
+    #sepsis_label = patient[0, -1]
+    current_matrix = np.nan_to_num(current_matrix)
+    #Preprocesses the data. fills NaN's with whatever the previous value was
+
+    for hour in range(len(patient)):
+        if hour == 0:
+             current_matrix = patient[0, :]
+             current_matrix = np.nan_to_num(current_matrix)
+             QSOFA = current_matrix[-1:]
+             if current_matrix[3] <=100 and current_matrix[6] >= 22 :
+                    QSOFA = 2
+             else :
+                    QSOFA = 0
+             #sepsis_label = patient[0, -1]
+        else:    
+            current_hour = patient[hour, :]
+            current_hour = np.nan_to_num(current_hour)
+            current_matrix = np.vstack((current_matrix, current_hour)) #Stacks current hour on
+            
+            #Preprocesses the data. fills with mean values of columns
+            for feature in range(len(current_matrix[0,:])):
+                if current_matrix[hour, feature] == 0:
+                    current_matrix[hour, feature] = current_matrix[hour-1, feature]
+                else:
+                    continue
+            QSOFA = current_matrix[:, -1:]     
+            for hour1 in range(len(QSOFA)):
+                if current_matrix[hour1, 3] <=100 and current_matrix[hour1, 6] >= 22 :
+                    QSOFA[hour1] = 2
+                else :
+                    QSOFA[hour1] = 0  
+    current_matrix = scale(current_matrix, axis=0, with_mean=True, with_std=True, copy=True)
+
+    return(current_matrix, QSOFA)
+    
+    
+def training_hour_by_hour(patient):
+    current_matrix = patient[0, :]
+    #sepsis_label = patient[0, -1]
+    current_matrix = np.nan_to_num(current_matrix)
+    #Preprocesses the data. fills NaN's with whatever the previous value was
+
+    for hour in range(len(patient)):
+        if hour == 0:
+             current_matrix = patient[0, :]
+             current_matrix = np.nan_to_num(current_matrix)
+             
+             #sepsis_label = patient[0, -1]
+        else:    
+            current_hour = patient[hour, :]
+            current_hour = np.nan_to_num(current_hour)
+            current_matrix = np.vstack((current_matrix, current_hour)) #Stacks current hour on
+            
+            #current_label = [hour, -1]
+            #sepsis_label = np.vstack((sepsis_label, current_label)) #Stacks current hour on
+            #Preprocesses the data. fills with mean values of columns
+            for feature in range(len(current_matrix[0,:])):
+                if current_matrix[hour, feature] == 0:
+                    current_matrix[hour, feature] = current_matrix[hour-1, feature]
+                else:
+                    continue
+    sepsis_labels = current_matrix[:, -1:]
+    QSOFA = current_matrix[:, -1]
+    
+    for hour in range(len(patient)):
+        if current_matrix[hour, 3] <=100 and current_matrix[hour, 6] >= 22 :
+            QSOFA[hour] = 2
+        else :
+            QSOFA[hour] = 0
+            
+
+    current_matrix = np.delete(current_matrix, 40, 1)
+    current_matrix = scale(current_matrix, axis=0, with_mean=True, with_std=True, copy=True)
+    current_matrix[:, -1:] = sepsis_labels
+    
+    one_hot_labels = np.zeros((len(sepsis_labels),2))
+    i=0
+    for i in range(len(sepsis_labels)):
+        if sepsis_labels[i] == 0:
+            one_hot_labels[i, :] = [1, 0] 
+        else:
+            one_hot_labels[i, :] = [0, 1]
+
+    return(current_matrix, sepsis_labels, one_hot_labels, QSOFA)
+    
 def sort_train(train_list):         #also normalizes and fills NaN w/ zero
     
     input_training_data = np.zeros(40)
@@ -39,9 +129,9 @@ def get_train_test():
     with open("train_setA.txt", 'r') as file:
         for line in file:
             train_string = line
-            train_listA = train_string.split('\t')
+            train_listA = train_string.split()
     file.close()
-    train_listA = train_listA[:-1]
+    
     
     train_listA =[int(i) for i in train_listA]
     
@@ -49,29 +139,28 @@ def get_train_test():
     
         for line in file:
             test_string = line
-            test_listA = test_string.split('\t')
+            test_listA = test_string.split()
     file.close()
     
-    test_listA = test_listA[:-1]
     test_listA = [int(i) for i in test_listA]
     
     with open("train_setB.txt", 'r') as file:
         for line in file:
             train_string = line
-            train_listB = train_string.split('\t')
+            train_listB = train_string.split()
     file.close()
     
-    train_listB = train_listB[:-1]
+
     train_listB = [int(i) for i in train_listB]
     
     with open("test_setB.txt", 'r') as file:
     
         for line in file:
             test_string = line
-            test_listB = test_string.split('\t')  
+            test_listB = test_string.split()  
     file.close()
     
-    test_listB = test_listB[:-1]
+
     test_listB = [int(i) for i in test_listB]
     
     return(train_listA, test_listA, train_listB, test_listB)

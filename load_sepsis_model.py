@@ -105,6 +105,8 @@ def hour_by_hour(patient):
     #sepsis_label = patient[0, -1]
     current_matrix = np.nan_to_num(current_matrix)
     
+    #Grabs the sepsis labels from the current patient matrix
+    sepsis_labels = patient[:, -1:]
     
     #Preprocesses the data. fills NaN's with whatever the previous value was and to 0 if there was no previous value
     for hour in range(len(patient)):
@@ -127,8 +129,6 @@ def hour_by_hour(patient):
                 else:
                     continue
     
-    #Grabs the sepsis labels from the current patient matrix
-    sepsis_labels = current_matrix[:, -1:]
     
     #QSOFA test is applied for each hour of the patient
     QSOFA = current_matrix[:, -1:]
@@ -193,24 +193,26 @@ for file_name in train_listA:
 
 patient_number = 1
 print("\n")        
-for file_name in train_listB:
-        
-        
-        print("\r working patient: "+ str(patient_number), end= '')
-        
-        current_file_name = "p{0:06d}.psv".format(file_name)
-        file_to_open = os.path.join("/home/khristian/Documents/Training/Training2/trainingB/training_setB/", current_file_name) 
-        
-        ICU_values, column_names = read_challenge_data(file_to_open)    #Gets values from psv file 
-        current_patient, sepsis_labels, one_hot_labels, QSOFA = hour_by_hour(ICU_values)    #hour by hour to preprocess
-        
-        #Stacks all the values
-        stacked_SOFA = np.vstack((stacked_SOFA, QSOFA))
-        stacked_train = np.vstack((stacked_train, current_patient))
-        stacked_labels = np.vstack((stacked_labels, sepsis_labels))
-        stacked_one_hot = np.vstack((stacked_one_hot, one_hot_labels))
-        
-        patient_number += 1
+# =============================================================================
+# for file_name in train_listB:
+#         
+#         
+#         print("\r working patient: "+ str(patient_number), end= '')
+#         
+#         current_file_name = "p{0:06d}.psv".format(file_name)
+#         file_to_open = os.path.join("Training/Training2/trainingB/training_setB/", current_file_name) 
+#         
+#         ICU_values, column_names = read_challenge_data(file_to_open)    #Gets values from psv file 
+#         current_patient, sepsis_labels, one_hot_labels, QSOFA = hour_by_hour(ICU_values)    #hour by hour to preprocess
+#         
+#         #Stacks all the values
+#         stacked_SOFA = np.vstack((stacked_SOFA, QSOFA))
+#         stacked_train = np.vstack((stacked_train, current_patient))
+#         stacked_labels = np.vstack((stacked_labels, sepsis_labels))
+#         stacked_one_hot = np.vstack((stacked_one_hot, one_hot_labels))
+#         
+#         patient_number += 1
+# =============================================================================
 
         
 

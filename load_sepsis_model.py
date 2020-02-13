@@ -156,9 +156,20 @@ def hour_by_hour(patient):
 
 
 
-
-
-
+def create_window ():
+    # pull the last 8 hours 
+    
+    # reorient the matix
+    
+    #loop through 
+    return()
+    
+#Handy little shift function for our window section
+def shift(seq, addition):
+    seq = [seq[-1]] + seq[:-1]
+    seq[0] = addition
+    return(seq)
+    
 
 ################## Creates the Stacked Training lis ###########################
     
@@ -171,7 +182,7 @@ stacked_train = np.zeros(40)
 stacked_SOFA = np.zeros(1)
 stacked_labels = np.zeros(1)
 stacked_one_hot = np.zeros(2)
-
+length_list = [0, 0, 0, 0, 0, 0, 0, 0]
 patient_number = 1  #counter for printing what patient is being worked
 for file_name in train_listA:
         
@@ -182,13 +193,27 @@ for file_name in train_listA:
         
         ICU_values, column_names = read_challenge_data(file_to_open)    #Gets values from psv file                
         current_patient, sepsis_labels, one_hot_labels, QSOFA = hour_by_hour(ICU_values)    #hour by hour to preprocess
-       
+               
         #Stacks all the values
         stacked_SOFA = np.vstack((stacked_SOFA, QSOFA)) 
         stacked_train = np.vstack((stacked_train, current_patient))
         stacked_labels = np.vstack((stacked_labels, sepsis_labels))
         stacked_one_hot = np.vstack((stacked_one_hot, one_hot_labels))
         
+        ########################Window Section#################################
+        current_length = len(current_patient)
+        
+        
+        if patient_number > 8:
+            length_list = shift(length_list, len(current_patient))
+            current_window = create_window(stacked_train, length_list, _)
+        elif patient_number < 8: 
+            length_list[8-patient_number] = len(current_patient)
+            
+        elif patient_number == 8:
+            length_list[8-patient_number] = len(current_patient)
+            
+            
         patient_number += 1
 
 patient_number = 1

@@ -154,14 +154,41 @@ def hour_by_hour(patient):
 
     return(current_matrix, sepsis_labels, one_hot_labels, QSOFA)
 
+# =============================================================================
+# def create_window (pca_current_patient, one_hot_labels, QSOFA):
+#     # pull the last 8 hours 
+#     pca_current_patient = np.hstack((pca_current_patient, QSOFA))
+#     for hour in len(pca_current_patient):
+#         pca_current_patient = np.hstack((pca_current_patient, QSOFA))
+#         window = pca_current_patient[-1,:]  #Initializes the window
+#         rng = [-1, -2, -3, -4, -5, -6, -7, -8]  #counter for indexing ease
+#     
+#         if len(pca_current_patient) < 8:
+#             for i in range(1, len(pca_current_patient)):  #want to start at 1 to avoid redoing the initialized row
+#                 window = np.hstack((window, pca_current_patient[rng[i],:]))
+#             for i in range(len(pca_current_patient), 8):
+#                 window = np.hstack((window, np.zeros(11)))
+#         else:
+#             for i in range(1, 8):
+#                 window = np.hstack((window, pca_current_patient[rng[i],:]))
+#         window = np.hstack((window, one_hot_labels[-1,:]))
+#     return(window)
+# =============================================================================
 
-
-def create_window (stacked_train, stacked_labels):
+def create_window (pca_current_patient, one_hot_labels, QSOFA):
     # pull the last 8 hours 
-    window = stacked_train[-8,:]
-    for i in range(-7, 0):
-        window = np.hstack((window, stacked_train[-i,:]))
-    window = np.hstack((window, stacked_labels[-1,:]))
+    pca_current_patient = np.hstack((pca_current_patient, QSOFA))
+    window = pca_current_patient[-1,:]  #Initializes the window
+    rng = [-1, -2, -3, -4, -5, -6, -7, -8]  #counter for indexing ease
+    if len(pca_current_patient) < 8:
+        for i in range(1, len(pca_current_patient)):  #want to start at 1 to avoid redoing the initialized row
+            window = np.hstack((window, pca_current_patient[rng[i],:]))
+        for i in range(len(pca_current_patient), 8):
+            window = np.hstack((window, np.zeros(11)))
+    else:
+        for i in range(1, 8):
+            window = np.hstack((window, pca_current_patient[rng[i],:]))
+    window = np.hstack((window, one_hot_labels[-1,:]))
     return(window)
     
 #Handy little shift function for our window section
@@ -182,7 +209,6 @@ stacked_train = np.zeros(40)
 stacked_SOFA = np.zeros(1)
 stacked_labels = np.zeros(1)
 stacked_one_hot = np.zeros(2)
-stacked_window = np.zeros(321)
 length_list = [0, 0, 0, 0, 0, 0, 0, 0]
 patient_number = 1  #counter for printing what patient is being worked
 for file_name in train_listA:
@@ -201,11 +227,7 @@ for file_name in train_listA:
         stacked_labels = np.vstack((stacked_labels, sepsis_labels))
         stacked_one_hot = np.vstack((stacked_one_hot, one_hot_labels))
         
-        ########################Window Section#################################
-        
-        if len(current_patient) >= 8:
-            current_window = create_window(stacked_train, stacked_labels)
-        stacked_window = np.vstack((stacked_window, current_window))  
+
         patient_number += 1
 
 patient_number = 1
@@ -263,7 +285,34 @@ end = time.time()
 total = end-  start
 print("\t\tstacking took " + str(total) + " seconds\n")    
 ###############################################################################
- 
+
+########################Window Section#################################
+stacked_window = np.zeros(90)
+
+for file_name in train_listA:
+        
+        print("\r window stacking patient (GroupA): "+ str(patient_number), end= '')
+        
+        current_file_name = "p{0:06d}.psv".format(file_name)
+        file_to_open = os.path.join("Training/Training2/trainingA/training/", current_file_name) 
+        
+        ICU_values, column_names = read_challenge_data(file_to_open)    #Gets values from psv file                
+        current_patient, sepsis_labels, one_hot_labels, QSOFA = hour_by_hour(ICU_values)    #hour by hour to preprocess
+               
+        
+        
+        #transforms the current_patient
+        pca_current_patient = pca.transform(current_patient)
+        for hour in range(1, len(current_patient)+1):
+            current_window = create_window(pca_current_patient[0:hour, :], one_hot_labels[0:hour, :], QSOFA[0:hour, :])
+            
+            stacked_window = np.vstack((stacked_window, current_window))   
+
+        patient_number += 1
+
+patient_number = 1
+print("\n")                
+stacked_window = np.delete(stacked_window, 0, 0)
 
 
 ###########################Dummy Test Set######################################
